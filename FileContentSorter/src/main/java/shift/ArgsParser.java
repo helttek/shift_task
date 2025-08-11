@@ -15,7 +15,7 @@ public class ArgsParser {
         Boolean prepend = null;
         Boolean shortStats = null;
         Boolean fullStats = null;
-        ArrayList<String> inFiles = new ArrayList<String>();
+        ArrayList<String> inFiles = new ArrayList<>();
 
         if (args.length < 1) {
             throw new RuntimeException("no arguments provided.");

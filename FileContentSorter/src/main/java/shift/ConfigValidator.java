@@ -13,10 +13,12 @@ public class ConfigValidator {
             throw new RuntimeException("no input files provided");
         }
         if (!IsValidPath(cfg.GetPath())) {
+            cfg.SetDefaultPath();
             System.out.println("Warning: invalid result files path, files will be created in " + cfg.GetDefaultPath()
                     + " directory.");
         }
-        if (!IsVaildPrefix(cfg.GetPrefix())) {
+        if (!IsValidPrefix(cfg.GetPrefix())) {
+            cfg.SetEmptyPrefix();
             System.out.println("Warning: invalid prefix name.");
         }
 
@@ -41,13 +43,10 @@ public class ConfigValidator {
         return true;
     }
 
-    private boolean IsVaildPrefix(String prefix) {
+    private boolean IsValidPrefix(String prefix) {
         if (prefix == null) {
             return true;
         }
-        if (prefix.indexOf("/") != -1) {
-            return false;
-        }
-        return true;
+        return !prefix.contains("/");
     }
 }

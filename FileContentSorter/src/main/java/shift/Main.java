@@ -9,14 +9,21 @@ public class Main {
             ConfigValidator validator = new ConfigValidator();
             validator.validate(cfg);
 
-            Statistics stats = new Statistics();
-            Sorter sorter = new Sorter();
+            Statistics stats = null;
+            if (cfg.IsShortStatistics()) {
+                stats = new ShortStatistics();
+            }
+            if (cfg.IsFullStatistics()) {
+                stats = new FullStatistics();
+            }
+
+            Sorter sorter = new Sorter(cfg, stats);
 
             FileContentSorter fcs = new FileContentSorter(cfg, sorter, stats);
 
             fcs.run();
         } catch (Exception e) {
-            System.err.println("Error: " + e.getMessage());
+            System.out.println("Error: " + e.getMessage());
         }
     }
 }
