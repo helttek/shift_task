@@ -3,75 +3,98 @@ package shift;
 import java.io.*;
 
 public class Sorter {
-    private Config cfg;
-    private Statistics stats;
+    private final Config cfg;
+    private final Statistics stats;
+    private final Writer writer;
 
-    public Sorter(Config cfg, Statistics stats) {
+    public Sorter(Config cfg, Statistics stats, Writer writer) {
         this.cfg = cfg;
         this.stats = stats;
+        this.writer = writer;
     }
 
     public void sort() {
-        for (String file : cfg.GetInputFiles()) {
-            sortFile(file);
-        }
-    }
-
-    private void sortFile(String file) {
-        BufferedReader reader;
-        try {
-            reader = new BufferedReader(new FileReader(file));
-            try {
-                String line = reader.readLine();
-                while (line != null) {
-                    sortLine(line);
-                    try {
-                        line = reader.readLine();
-                    } catch (IOException e) {
-                        System.err.println("Failed to read from file \"" + file + "\": " + e.getMessage());
-                    }
-                }
-            } catch (IOException e) {
-                System.err.println("Failed to read from file \"" + file + "\": " + e.getMessage());
-            }
-        } catch (FileNotFoundException e) {
-            System.out.println("Failed to find file \"" + file + "\".");
-        }
-    }
-
-    private void sortLine(String line) {
-        TypeWriter writer = new TypeWriter(this.cfg);
         if (stats == null) {
-            try {
-                int i = Integer.parseInt(line);
-                writer.Write(i);
-                return;
-            } catch (NumberFormatException ignored) {
+            for (String file : cfg.GetInputFilesCopy()) {
+                sortFile(new Reader(file));
             }
-            try {
-                float d = Float.parseFloat(line);
-                writer.Write(d);
-                return;
-            } catch (NumberFormatException ignored) {
+            writer.Close();
+            return;
+        }
+        for (String file : cfg.GetInputFilesCopy()) {
+            sortFileWithStats(new Reader(file));
+        }
+        writer.Close();
+    }
+
+    private void sortFile(Reader reader) {
+        try {
+            String line = reader.readLine();
+            while (line != null) {
+                SortAndWriteLine(line);
+
+                try {
+                    line = reader.readLine();
+                } catch (IOException e) {
+                    System.err.println(e.getMessage());
+                }
             }
-        } else {
-            try {
-                int i = Integer.parseInt(line);
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+        }
+    }
+
+    private void sortFileWithStats(Reader reader) {
+        try {
+            String line = reader.readLine();
+            while (line != null) {
+                SortWithStatsAndWriteLine(line);
+
+                try {
+                    line = reader.readLine();
+                } catch (IOException e) {
+                    System.err.println(e.getMessage());
+                }
+            }
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+        }
+    }
+
+    private void SortAndWriteLine(String line) {
+        try {
+            writer.Write(Integer.parseInt(line));
+            return;
+        } catch (NumberFormatException ignored) {
+        }
+        try {
+            writer.Write(Float.parseFloat(line));
+            return;
+        } catch (NumberFormatException ignored) {
+        }
+        writer.Write(line);
+    }
+
+    private void SortWithStatsAndWriteLine(String line) {
+        try {
+            int i = Integer.parseInt(line);
+            if (writer.Write(i)) {
                 stats.collect(i);
-                writer.Write(i);
-                return;
-            } catch (NumberFormatException ignored) {
             }
-            try {
-                float d = Float.parseFloat(line);
+            return;
+        } catch (NumberFormatException ignored) {
+        }
+        try {
+            float d = Float.parseFloat(line);
+            if (writer.Write(d)) {
                 stats.collect(d);
-                writer.Write(d);
-                return;
-            } catch (NumberFormatException ignored) {
             }
+
+            return;
+        } catch (NumberFormatException ignored) {
+        }
+        if (writer.Write(line)) {
             stats.collect(line);
         }
-
-        writer.Write(line);
     }
 }

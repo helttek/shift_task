@@ -3,26 +3,26 @@ package shift;
 import java.io.File;
 import java.util.Iterator;
 
-public class ConfigValidator {
-    public ConfigValidator() {
+public class ArgsValidator {
+    public ArgsValidator() {
 
     }
 
-    public void validate(Config cfg) {
-        if (cfg.GetInputFiles().isEmpty()) {
+    public Args validate(Args args) {
+        if (args.NoFiles()) {
             throw new RuntimeException("no input files provided");
         }
-        if (!IsValidPath(cfg.GetPath())) {
-            cfg.SetDefaultPath();
-            System.out.println("Warning: invalid result files path, files will be created in " + cfg.GetDefaultPath()
+        if (!IsValidPath(args.GetOption("-o"))) {
+            args.RemoveOption("-o");
+            System.out.println("Warning: invalid result files path, files will be created in " + Config.GetDefaultPath()
                     + " directory.");
         }
-        if (!IsValidPrefix(cfg.GetPrefix())) {
-            cfg.SetEmptyPrefix();
-            System.out.println("Warning: invalid prefix name.");
+        if (!IsValidPrefix(args.GetOption("-p"))) {
+            args.RemoveOption("-p");
+            System.out.println("Warning: invalid prefix name. No prefix will be used.");
         }
 
-        Iterator<String> iterator = cfg.GetInputFiles().iterator();
+        Iterator<String> iterator = args.GetFilesIterator();
         while (iterator.hasNext()) {
             String filePath = iterator.next();
             File file = new File(filePath);
@@ -30,6 +30,8 @@ public class ConfigValidator {
                 System.out.println("Unknown option or invalid file \"" + filePath + "\".");
             }
         }
+
+        return args;
     }
 
     private boolean IsValidPath(String path) {

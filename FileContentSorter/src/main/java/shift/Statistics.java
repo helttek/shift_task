@@ -1,6 +1,6 @@
 package shift;
 
-abstract class Statistics {
+public abstract class Statistics {
     public Statistics() {
 
     }

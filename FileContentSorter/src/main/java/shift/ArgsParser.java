@@ -1,21 +1,18 @@
 package shift;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class ArgsParser {
     public ArgsParser() {
     }
 
-    public Config parse(String[] args) {
+    public Args parse(String[] args) {
         String curPath = null;
         String curPrefix = null;
 
-        String path = null;
-        String prefix = null;
-        Boolean prepend = null;
-        Boolean shortStats = null;
-        Boolean fullStats = null;
         ArrayList<String> inFiles = new ArrayList<>();
+        HashMap<String, String> options = new HashMap<>();
 
         if (args.length < 1) {
             throw new RuntimeException("no arguments provided.");
@@ -23,12 +20,12 @@ public class ArgsParser {
 
         for (int i = 0; i < args.length; i++) {
             if (curPath != null) {
-                path = curPath;
+                options.put("-o", curPath);
                 curPath = null;
                 continue;
             }
             if (curPrefix != null) {
-                prefix = curPrefix;
+                options.put("-p", curPrefix);
                 curPrefix = null;
                 continue;
             }
@@ -51,15 +48,15 @@ public class ArgsParser {
                     break;
 
                 case "-a":
-                    prepend = true;
+                    options.put("-a", "");
                     break;
 
                 case "-s":
-                    shortStats = true;
+                    options.put("-s", "");
                     break;
 
                 case "-f":
-                    fullStats = true;
+                    options.put("-f", "");
                     break;
 
                 default:
@@ -68,6 +65,6 @@ public class ArgsParser {
             }
         }
 
-        return new Config(path, prefix, prepend, shortStats, fullStats, inFiles);
+        return new Args(inFiles, options);
     }
 }

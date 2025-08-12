@@ -4,10 +4,8 @@ public class Main {
     public static void main(String[] args) {
         try {
             ArgsParser parser = new ArgsParser();
-            Config cfg = parser.parse(args);
-
-            ConfigValidator validator = new ConfigValidator();
-            validator.validate(cfg);
+            ArgsValidator validator = new ArgsValidator();
+            Config cfg = new Config(validator.validate(parser.parse(args)));
 
             Statistics stats = null;
             if (cfg.IsShortStatistics()) {
@@ -17,13 +15,16 @@ public class Main {
                 stats = new FullStatistics();
             }
 
-            Sorter sorter = new Sorter(cfg, stats);
+            Writer writer = new Writer(cfg.GetIntFile(), cfg.GetFloatFile(), cfg.GetStringFile(), cfg.DoAppend());
+            Sorter sorter = new Sorter(cfg, stats, writer);
 
-            FileContentSorter fcs = new FileContentSorter(cfg, sorter, stats);
+            sorter.sort();
+            if (stats != null) {
+                stats.print();
+            }
 
-            fcs.run();
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
+        } catch (RuntimeException e) {
+            System.out.println(e.getMessage());
         }
     }
 }
