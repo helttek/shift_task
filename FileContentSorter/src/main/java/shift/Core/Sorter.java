@@ -1,6 +1,10 @@
-package shift;
+package shift.Core;
 
 import java.io.*;
+
+import shift.IO.Reader;
+import shift.IO.Writer;
+import shift.Statistics.Statistics;
 
 public class Sorter {
     private final Config cfg;
@@ -89,7 +93,6 @@ public class Sorter {
             if (writer.Write(d)) {
                 stats.collect(d);
             }
-
             return;
         } catch (NumberFormatException ignored) {
         }

@@ -1,11 +1,12 @@
-package shift;
+package shift.Args;
 
 import java.io.File;
 import java.util.Iterator;
 
+import shift.Core.Config;
+
 public class ArgsValidator {
     public ArgsValidator() {
-
     }
 
     public Args validate(Args args) {
@@ -27,7 +28,7 @@ public class ArgsValidator {
             String filePath = iterator.next();
             File file = new File(filePath);
             if (!file.exists()) {
-                System.out.println("Unknown option or invalid file \"" + filePath + "\".");
+                System.out.println("File \"" + filePath + "\" doesn't exist.");
             }
         }
 

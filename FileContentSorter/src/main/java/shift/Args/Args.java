@@ -1,4 +1,4 @@
-package shift;
+package shift.Args;
 
 import java.util.ArrayList;
 import java.util.HashMap;

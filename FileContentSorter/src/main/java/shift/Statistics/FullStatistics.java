@@ -1,4 +1,4 @@
-package shift;
+package shift.Statistics;
 
 public class FullStatistics extends Statistics {
     private long intNum;

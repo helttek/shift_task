@@ -1,4 +1,4 @@
-package shift;
+package shift.Args;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,7 +15,7 @@ public class ArgsParser {
         HashMap<String, String> options = new HashMap<>();
 
         if (args.length < 1) {
-            throw new RuntimeException("no arguments provided.");
+            throw new RuntimeException("No arguments provided.");
         }
 
         for (int i = 0; i < args.length; i++) {

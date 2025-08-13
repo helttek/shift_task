@@ -1,4 +1,4 @@
-package shift;
+package shift.IO;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -22,6 +22,10 @@ public class Writer {
         this.stringWriter = null;
     }
 
+    /**
+     * 
+     * @return True if write was successful, false otherwise.
+     */
     public boolean Write(int i) {
         if (this.intWriter == null) {
             try {

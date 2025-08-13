@@ -1,7 +1,9 @@
-package shift;
+package shift.Core;
 
 import java.util.ArrayList;
 import java.util.Objects;
+
+import shift.Args.Args;
 
 public final class Config {
     private static final String defaultPath = ".";
@@ -17,7 +19,6 @@ public final class Config {
     private final String stringFile;
 
     public Config(Args validArgs) {
-
         String path = Objects.requireNonNullElse(validArgs.GetOption("-o"), defaultPath);
         String prefix = Objects.requireNonNullElse(validArgs.GetOption("-p"), defaultPrefix);
         this.fullStats = validArgs.GetOption("-f") != null;
@@ -31,7 +32,7 @@ public final class Config {
     }
 
     public ArrayList<String> GetInputFilesCopy() {
-        return inputFiles;
+        return new ArrayList<>(inputFiles);
     }
 
     public Boolean IsShortStatistics() {

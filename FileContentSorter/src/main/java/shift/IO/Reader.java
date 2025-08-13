@@ -1,4 +1,4 @@
-package shift;
+package shift.IO;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

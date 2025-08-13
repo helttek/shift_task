@@ -1,4 +1,4 @@
-package shift;
+package shift.Statistics;
 
 public class ShortStatistics extends Statistics {
     private long intNum;

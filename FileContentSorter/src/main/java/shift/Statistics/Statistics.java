@@ -1,8 +1,11 @@
-package shift;
+package shift.Statistics;
 
+/**
+ * Abstract class to provide universal interface for statistics actions.
+ *
+ */
 public abstract class Statistics {
     public Statistics() {
-
     }
 
     public void print() {

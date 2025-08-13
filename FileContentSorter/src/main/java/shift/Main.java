@@ -1,5 +1,11 @@
 package shift;
 
+import shift.Args.ArgsParser;
+import shift.Args.ArgsValidator;
+import shift.Core.*;
+import shift.IO.Writer;
+import shift.Statistics.*;
+
 public class Main {
     public static void main(String[] args) {
         try {
