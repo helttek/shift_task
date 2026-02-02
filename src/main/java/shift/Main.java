@@ -7,7 +7,7 @@ import shift.IO.Writer;
 import shift.Statistics.*;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         try {
             ArgsParser parser = new ArgsParser();
             ArgsValidator validator = new ArgsValidator();
@@ -32,5 +32,6 @@ public class Main {
         } catch (RuntimeException e) {
             System.out.println(e.getMessage());
         }
+        Thread.sleep(5000);
     }
 }
