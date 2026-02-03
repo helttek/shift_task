@@ -6,10 +6,7 @@ import java.util.Iterator;
 import shift.Core.Config;
 
 public class ArgsValidator {
-    public ArgsValidator() {
-    }
-
-    public Args validate(Args args) {
+    public static Args validate(Args args) {
         if (args.NoFiles()) {
             throw new RuntimeException("no input files provided");
         }
@@ -35,7 +32,7 @@ public class ArgsValidator {
         return args;
     }
 
-    private boolean IsValidPath(String path) {
+    private static boolean IsValidPath(String path) {
         if (path == null) {
             return true;
         }
@@ -46,7 +43,7 @@ public class ArgsValidator {
         return true;
     }
 
-    private boolean IsValidPrefix(String prefix) {
+    private static boolean IsValidPrefix(String prefix) {
         if (prefix == null) {
             return true;
         }

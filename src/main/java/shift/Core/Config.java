@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 import shift.Args.Args;
+import shift.Args.ArgsParser;
+import shift.Args.ArgsValidator;
+import shift.IO.WriterConfig;
 
 public final class Config {
     private static final String defaultPath = ".";
@@ -18,7 +21,9 @@ public final class Config {
     private final String floatFile;
     private final String stringFile;
 
-    public Config(Args validArgs) {
+    public Config(String[] args) {
+        Args validArgs = ArgsValidator.validate(ArgsParser.parse(args));
+
         String path = Objects.requireNonNullElse(validArgs.GetOption("-o"), defaultPath);
         String prefix = Objects.requireNonNullElse(validArgs.GetOption("-p"), defaultPrefix);
         this.fullStats = validArgs.GetOption("-f") != null;
@@ -61,5 +66,9 @@ public final class Config {
 
     public String GetStringFile() {
         return stringFile;
+    }
+
+    public WriterConfig GetWriterConfig() {
+        return new WriterConfig(intFile, floatFile, stringFile, append);
     }
 }

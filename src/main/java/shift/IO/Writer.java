@@ -12,18 +12,18 @@ public class Writer {
     private FileWriter floatWriter;
     private FileWriter stringWriter;
 
-    public Writer(String intFile, String floatFile, String stringFile, boolean append) {
-        this.intFileName = intFile;
-        this.floatFileName = floatFile;
-        this.stringFileName = stringFile;
-        this.append = append;
+    public Writer(WriterConfig cfg) {
+        this.intFileName = cfg.intFile();
+        this.floatFileName = cfg.floatFile();
+        this.stringFileName = cfg.stringFile();
+        this.append = cfg.append();
         this.intWriter = null;
         this.floatWriter = null;
         this.stringWriter = null;
     }
 
     /**
-     * 
+     *
      * @return True if write was successful, false otherwise.
      */
     public boolean Write(int i) {

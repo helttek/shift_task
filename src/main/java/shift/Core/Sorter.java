@@ -1,10 +1,10 @@
 package shift.Core;
 
-import java.io.*;
-
 import shift.IO.Reader;
 import shift.IO.Writer;
 import shift.Statistics.Statistics;
+
+import java.io.IOException;
 
 public class Sorter {
     private final Config cfg;

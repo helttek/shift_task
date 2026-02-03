@@ -1,10 +1,6 @@
 package shift.Statistics;
 
 public class FullStatistics extends Statistics {
-    private long intNum;
-    private long floatNum;
-    private long strNum;
-
     private long maxInt;
     private long intSum;
     private long minInt;

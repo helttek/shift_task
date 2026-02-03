@@ -1,9 +1,6 @@
 package shift.Statistics;
 
 public class ShortStatistics extends Statistics {
-    private long intNum;
-    private long floatNum;
-    private long strNum;
 
     public ShortStatistics() {
         intNum = 0;

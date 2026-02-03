@@ -3,11 +3,10 @@ package shift.Args;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class ArgsParser {
-    public ArgsParser() {
-    }
+import org.apache.commons.cli.*;
 
-    public Args parse(String[] args) {
+public class ArgsParser {
+    public static Args parse(String[] args) {
         String curPath = null;
         String curPrefix = null;
 

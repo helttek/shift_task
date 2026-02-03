@@ -5,6 +5,10 @@ package shift.Statistics;
  *
  */
 public abstract class Statistics {
+    protected long intNum;
+    protected long floatNum;
+    protected long strNum;
+
     public Statistics() {
     }
 
