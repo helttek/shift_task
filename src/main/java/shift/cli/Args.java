@@ -1,5 +1,6 @@
 package shift.cli;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -17,19 +18,12 @@ public class Args {
         options.put(name, values);
     }
 
-    public boolean noInputFiles() {
-        return this.files.isEmpty();
-    }
-
-    public Iterator<String> GetFilesIterator() {
-        return this.files.iterator();
-    }
-
     public List<String> getInputFiles() {
-        return files;
+        return Collections.unmodifiableList(files);
     }
 
     public List<String> GetOption(String key) {
-        return this.options.get(key);
+        return options.get(key);
     }
+
 }

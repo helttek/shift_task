@@ -1,11 +1,13 @@
 package shift;
 
-import shift.Core.Config;
 import shift.Core.Sorter;
 import shift.IO.Writer;
 import shift.Statistics.FullStatistics;
 import shift.Statistics.ShortStatistics;
 import shift.Statistics.Statistics;
+import shift.cli.ArgsParser;
+import shift.config.ArgsValidator;
+import shift.config.Config;
 
 public class FileContentSorter {
     private Statistics stats;
@@ -13,22 +15,23 @@ public class FileContentSorter {
 
     //TODO:
     // - add custom expressions for errors in config parsing, validating
-    // - use cli parsing library apache common cli
     // - add comments wherever it's necessary
-    // - rewrite the pathing logic, so that it's cross platform and doesn't use raw strings
+    // - work out how do enums work, with string values especially
 
     public FileContentSorter(String[] args) {
-        Config cfg = new Config(args);
+        ArgsParser argsParser = new ArgsParser(args);
+        ArgsValidator argsValidator = new ArgsValidator(argsParser.parse());
+        Config cfg = argsValidator.getConfig();
 
         stats = null;
-        if (cfg.IsShortStatistics()) {
+        if (cfg.shortStatistics()) {
             stats = new ShortStatistics();
         }
-        if (cfg.IsFullStatistics()) {
+        if (cfg.fullStatistics()) {
             stats = new FullStatistics();
         }
 
-        sorter = new Sorter(cfg, stats, new Writer(cfg.GetWriterConfig()));
+        sorter = new Sorter(cfg, stats, new Writer(cfg.getWriterConfig()));
     }
 
     public void start() {

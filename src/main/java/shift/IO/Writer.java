@@ -2,12 +2,13 @@ package shift.IO;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Path;
 
 public class Writer {
     private final boolean append;
-    private final String intFileName;
-    private final String floatFileName;
-    private final String stringFileName;
+    private final Path intFileName;
+    private final Path floatFileName;
+    private final Path stringFileName;
     private FileWriter intWriter;
     private FileWriter floatWriter;
     private FileWriter stringWriter;
@@ -29,7 +30,7 @@ public class Writer {
     public boolean Write(int i) {
         if (this.intWriter == null) {
             try {
-                this.intWriter = new FileWriter(intFileName, append);
+                this.intWriter = new FileWriter(intFileName.toFile(), append);
             } catch (IOException e) {
                 System.err.println("Failed to create buffered writer for output file: " + e.getMessage());
                 return false;
@@ -41,7 +42,7 @@ public class Writer {
     public boolean Write(float f) {
         if (this.floatWriter == null) {
             try {
-                this.floatWriter = new FileWriter(floatFileName, append);
+                this.floatWriter = new FileWriter(floatFileName.toFile(), append);
             } catch (IOException e) {
                 System.err.println("Failed to create buffered writer for output file: " + e.getMessage());
                 return false;
@@ -53,7 +54,7 @@ public class Writer {
     public boolean Write(String s) {
         if (this.stringWriter == null) {
             try {
-                this.stringWriter = new FileWriter(stringFileName, append);
+                this.stringWriter = new FileWriter(stringFileName.toFile(), append);
             } catch (IOException e) {
                 System.err.println("Failed to create buffered writer for output file: " + e.getMessage());
                 return false;

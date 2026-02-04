@@ -3,6 +3,7 @@ package shift.Core;
 import shift.IO.Reader;
 import shift.IO.Writer;
 import shift.Statistics.Statistics;
+import shift.config.Config;
 
 import java.io.IOException;
 
@@ -19,13 +20,13 @@ public class Sorter {
 
     public void sort() {
         if (stats == null) {
-            for (String file : cfg.GetInputFilesCopy()) {
+            for (var file : cfg.inputFiles()) {
                 sortFile(new Reader(file));
             }
             writer.Close();
             return;
         }
-        for (String file : cfg.GetInputFilesCopy()) {
+        for (var file : cfg.inputFiles()) {
             sortFileWithStats(new Reader(file));
         }
         writer.Close();

@@ -1,9 +1,11 @@
 package shift.IO;
 
+import java.nio.file.Path;
+
 public record WriterConfig(
-        String intFile,
-        String floatFile,
-        String stringFile,
+        Path intFile,
+        Path floatFile,
+        Path stringFile,
         boolean append
 ) {
 }

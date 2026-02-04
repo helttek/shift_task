@@ -1,5 +1,8 @@
 package shift.config;
 
+import shift.IO.WriterConfig;
+
+import java.nio.file.Path;
 import java.util.List;
 
 public record Config(
@@ -7,8 +10,11 @@ public record Config(
         boolean shortStatistics,
         boolean fullStatistics,
         List<String> inputFiles,
-        String intFile,
-        String floatFile,
-        String stringFile
+        Path intFile,
+        Path floatFile,
+        Path stringFile
 ) {
+    public WriterConfig getWriterConfig() {
+        return new WriterConfig(intFile, floatFile, stringFile, append);
+    }
 }
