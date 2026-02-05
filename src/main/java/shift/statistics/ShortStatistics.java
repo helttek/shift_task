@@ -1,4 +1,4 @@
-package shift.Statistics;
+package shift.statistics;
 
 public class ShortStatistics extends Statistics {
 
@@ -11,23 +11,23 @@ public class ShortStatistics extends Statistics {
     @Override
     public void print() {
         System.out.println("---------------STATISTICS-----------------");
-        System.out.println("Number of integers: " + this.intNum);
-        System.out.println("Number of floats: " + this.floatNum);
-        System.out.println("Number of strings: " + this.strNum);
+        System.out.println("Number of integers: " + intNum);
+        System.out.println("Number of floats: " + floatNum);
+        System.out.println("Number of strings: " + strNum);
     }
 
     @Override
     public void collect(String s) {
-        this.strNum++;
+        strNum++;
     }
 
     @Override
     public void collect(int i) {
-        this.intNum++;
+        intNum++;
     }
 
     @Override
     public void collect(float f) {
-        this.floatNum++;
+        floatNum++;
     }
 }

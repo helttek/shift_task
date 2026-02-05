@@ -1,4 +1,4 @@
-package shift.Statistics;
+package shift.statistics;
 
 /**
  * Abstract class to provide universal interface for statistics actions.

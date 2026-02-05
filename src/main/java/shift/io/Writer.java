@@ -1,4 +1,4 @@
-package shift.IO;
+package shift.io;
 
 import shift.config.WriterConfig;
 
@@ -16,13 +16,13 @@ public class Writer {
     private FileWriter stringWriter;
 
     public Writer(WriterConfig cfg) {
-        this.intFileName = cfg.intFile();
-        this.floatFileName = cfg.floatFile();
-        this.stringFileName = cfg.stringFile();
-        this.append = cfg.append();
-        this.intWriter = null;
-        this.floatWriter = null;
-        this.stringWriter = null;
+        intFileName = cfg.intFile();
+        floatFileName = cfg.floatFile();
+        stringFileName = cfg.stringFile();
+        append = cfg.append();
+        intWriter = null;
+        floatWriter = null;
+        stringWriter = null;
     }
 
     /**
@@ -41,6 +41,10 @@ public class Writer {
         return WriteImpl(i, this.intWriter);
     }
 
+    /**
+     *
+     * @return True if write was successful, false otherwise.
+     */
     public boolean Write(float f) {
         if (this.floatWriter == null) {
             try {
@@ -53,6 +57,10 @@ public class Writer {
         return WriteImpl(f, this.floatWriter);
     }
 
+    /**
+     *
+     * @return True if write was successful, false otherwise.
+     */
     public boolean Write(String s) {
         if (this.stringWriter == null) {
             try {

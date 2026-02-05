@@ -62,7 +62,7 @@ public class ArgsValidator {
         return args.GetOption(OptionNamesEnum.FULL_STATISTICS_OPTION_NAME.getOptionName()) != null;
     }
 
-    private List<String> validateInputFiles() {
+    private List<String> validateInputFiles() throws NoInputFilesException {
         List<String> validFiles = args.getInputFiles().stream()
                 .filter(this::isValidPath)
                 .toList();
@@ -73,7 +73,7 @@ public class ArgsValidator {
         return validFiles;
     }
 
-    public Config getConfig() {
+    public Config getConfig() throws ConfigCreationErrorException {
         String outputFilesNamePrefix = validateOutputFilesNamePrefixOption();
         String outputDirectoryPath = validateOutputDirectoryPathOption();
 

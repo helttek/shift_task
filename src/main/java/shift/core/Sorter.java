@@ -1,8 +1,8 @@
-package shift.Core;
+package shift.core;
 
-import shift.IO.Reader;
-import shift.IO.Writer;
-import shift.Statistics.Statistics;
+import shift.io.Reader;
+import shift.io.Writer;
+import shift.statistics.Statistics;
 import shift.config.Config;
 
 import java.io.IOException;

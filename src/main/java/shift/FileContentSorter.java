@@ -1,10 +1,10 @@
 package shift;
 
-import shift.Core.Sorter;
-import shift.IO.Writer;
-import shift.Statistics.FullStatistics;
-import shift.Statistics.ShortStatistics;
-import shift.Statistics.Statistics;
+import shift.core.Sorter;
+import shift.io.Writer;
+import shift.statistics.FullStatistics;
+import shift.statistics.ShortStatistics;
+import shift.statistics.Statistics;
 import shift.cli.ArgsParser;
 import shift.cli.ArgsValidator;
 import shift.config.Config;
@@ -20,7 +20,7 @@ public class FileContentSorter {
     // - add custom expressions for errors in config parsing, validating
     // - add comments wherever it's necessary
 
-    public FileContentSorter(String[] args) {
+    public FileContentSorter(String[] args) throws FileContentSorterCreationErrorException {
         ArgsParser argsParser = new ArgsParser(args);
         ArgsValidator argsValidator;
         try {

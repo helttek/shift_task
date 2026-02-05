@@ -40,7 +40,7 @@ public class ArgsParser {
         }
     }
 
-    public Args parse() {
+    public Args parse() throws ArgsParsingErrorException {
         CommandLine cmd;
         try {
             cmd = parser.parse(options, args);
