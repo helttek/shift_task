@@ -1,5 +1,7 @@
 package shift.IO;
 
+import shift.config.WriterConfig;
+
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;

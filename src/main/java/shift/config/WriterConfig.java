@@ -1,4 +1,4 @@
-package shift.IO;
+package shift.config;
 
 import java.nio.file.Path;
 

@@ -1,7 +1,5 @@
 package shift.config;
 
-import shift.IO.WriterConfig;
-
 import java.nio.file.Path;
 import java.util.List;
 

@@ -6,8 +6,11 @@ import shift.Statistics.FullStatistics;
 import shift.Statistics.ShortStatistics;
 import shift.Statistics.Statistics;
 import shift.cli.ArgsParser;
-import shift.config.ArgsValidator;
+import shift.cli.ArgsValidator;
 import shift.config.Config;
+import shift.exceptions.ArgsParsingErrorException;
+import shift.exceptions.ConfigCreationErrorException;
+import shift.exceptions.FileContentSorterCreationErrorException;
 
 public class FileContentSorter {
     private Statistics stats;
@@ -16,12 +19,21 @@ public class FileContentSorter {
     //TODO:
     // - add custom expressions for errors in config parsing, validating
     // - add comments wherever it's necessary
-    // - work out how do enums work, with string values especially
 
     public FileContentSorter(String[] args) {
         ArgsParser argsParser = new ArgsParser(args);
-        ArgsValidator argsValidator = new ArgsValidator(argsParser.parse());
-        Config cfg = argsValidator.getConfig();
+        ArgsValidator argsValidator;
+        try {
+            argsValidator = new ArgsValidator(argsParser.parse());
+        } catch (ArgsParsingErrorException e) {
+            throw new FileContentSorterCreationErrorException("Failed to parse command line arguments: " + e.getMessage());
+        }
+        Config cfg;
+        try {
+            cfg = argsValidator.getConfig();
+        } catch (ConfigCreationErrorException e) {
+            throw new FileContentSorterCreationErrorException("Failed to create a config: " + e.getMessage());
+        }
 
         stats = null;
         if (cfg.shortStatistics()) {

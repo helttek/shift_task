@@ -1,13 +1,18 @@
-package shift.config;
+package shift.cli;
 
-import shift.cli.Args;
-import shift.cli.OptionNamesEnum;
+import lombok.extern.java.Log;
+import shift.config.Config;
+import shift.exceptions.ConfigCreationErrorException;
+import shift.exceptions.NoInputFilesException;
 
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.logging.Level;
 
+@Log
 public class ArgsValidator {
     private final Args args;
     private static final String DEFAULT_OUTPUT_DIRECTORY_PATH = ".";
@@ -22,38 +27,39 @@ public class ArgsValidator {
 
     private String validateOutputDirectoryPathOption() {
         try {
-            if (!isValidPath(args.GetOption(String.valueOf(OptionNamesEnum.OUTPUT_DIRECTORY_PATH_OPTION_NAME)).getFirst())) {
-                System.out.println("Warning: invalid result files path, files will be created in " + DEFAULT_OUTPUT_DIRECTORY_PATH + " directory.");
+            if (!isValidPath(args.GetOption(OptionNamesEnum.OUTPUT_DIRECTORY_PATH_OPTION_NAME.getOptionName()).getFirst())) {
+                log.log(Level.WARNING, "Warning: invalid result files path, files will be created in " + DEFAULT_OUTPUT_DIRECTORY_PATH + " directory.");
                 return DEFAULT_OUTPUT_DIRECTORY_PATH;
             }
-        } catch (NullPointerException ignored) {
+        } catch (NullPointerException | NoSuchElementException e) {
             return DEFAULT_OUTPUT_DIRECTORY_PATH;
         }
-        return args.GetOption(String.valueOf(OptionNamesEnum.OUTPUT_DIRECTORY_PATH_OPTION_NAME)).getFirst();
+
+        return args.GetOption(OptionNamesEnum.OUTPUT_DIRECTORY_PATH_OPTION_NAME.getOptionName()).getFirst();
     }
 
     private String validateOutputFilesNamePrefixOption() {
         try {
-            if (!isValidPrefix(args.GetOption(String.valueOf(OptionNamesEnum.OUTPUT_FILES_NAME_PREFIX_OPTION_NAME)).getFirst())) {
-                System.out.println("Warning: invalid prefix name. No prefix will be used.");
+            if (!isValidPrefix(args.GetOption(OptionNamesEnum.OUTPUT_FILES_NAME_PREFIX_OPTION_NAME.getOptionName()).getFirst())) {
+                log.log(Level.WARNING, "Warning: invalid prefix name. Default prefix will be used: \"" + DEFAULT_OUTPUT_FILES_NAME_PREFIX + "\".");
                 return DEFAULT_OUTPUT_FILES_NAME_PREFIX;
             }
-        } catch (NullPointerException ignored) {
+        } catch (NullPointerException | NoSuchElementException e) {
             return DEFAULT_OUTPUT_FILES_NAME_PREFIX;
         }
-        return args.GetOption(String.valueOf(OptionNamesEnum.OUTPUT_FILES_NAME_PREFIX_OPTION_NAME)).getFirst();
+        return args.GetOption(OptionNamesEnum.OUTPUT_FILES_NAME_PREFIX_OPTION_NAME.getOptionName()).getFirst();
     }
 
     private boolean validateOutputFilesAppendOption() {
-        return args.GetOption(String.valueOf(OptionNamesEnum.OUTPUT_FILES_APPEND_OPTION_NAME)) != null;
+        return args.GetOption(OptionNamesEnum.OUTPUT_FILES_APPEND_OPTION_NAME.getOptionName()) != null;
     }
 
     private boolean validateShortStatisticsOption() {
-        return args.GetOption(String.valueOf(OptionNamesEnum.SHORT_STATISTICS_OPTION_NAME)) != null;
+        return args.GetOption(OptionNamesEnum.SHORT_STATISTICS_OPTION_NAME.getOptionName()) != null;
     }
 
     private boolean validateFullStatisticsOption() {
-        return args.GetOption(String.valueOf(OptionNamesEnum.FULL_STATISTICS_OPTION_NAME)) != null;
+        return args.GetOption(OptionNamesEnum.FULL_STATISTICS_OPTION_NAME.getOptionName()) != null;
     }
 
     private List<String> validateInputFiles() {
@@ -62,7 +68,7 @@ public class ArgsValidator {
                 .toList();
 
         if (validFiles.isEmpty()) {
-            throw new RuntimeException("No valid input files provided. Please check your file paths.");
+            throw new NoInputFilesException("No valid input files provided. Check your file paths.");
         }
         return validFiles;
     }
@@ -71,15 +77,23 @@ public class ArgsValidator {
         String outputFilesNamePrefix = validateOutputFilesNamePrefixOption();
         String outputDirectoryPath = validateOutputDirectoryPathOption();
 
-        return new Config(
-                validateOutputFilesAppendOption(),
-                validateShortStatisticsOption(),
-                validateFullStatisticsOption(),
-                validateInputFiles(),
-                constructOutputFilePath(outputDirectoryPath, outputFilesNamePrefix, DEFAULT_INT_OUTPUT_FILENAME_WITHOUT_PREFIX),
-                constructOutputFilePath(outputDirectoryPath, outputFilesNamePrefix, DEFAULT_FLOAT_OUTPUT_FILENAME_WITHOUT_PREFIX),
-                constructOutputFilePath(outputDirectoryPath, outputFilesNamePrefix, DEFAULT_STRING_OUTPUT_FILENAME_WITHOUT_PREFIX)
-        );
+        Path intFile = constructOutputFilePath(outputDirectoryPath, outputFilesNamePrefix, DEFAULT_INT_OUTPUT_FILENAME_WITHOUT_PREFIX);
+        Path floatFile = constructOutputFilePath(outputDirectoryPath, outputFilesNamePrefix, DEFAULT_FLOAT_OUTPUT_FILENAME_WITHOUT_PREFIX);
+        Path stringFile = constructOutputFilePath(outputDirectoryPath, outputFilesNamePrefix, DEFAULT_STRING_OUTPUT_FILENAME_WITHOUT_PREFIX);
+
+        try {
+            return new Config(
+                    validateOutputFilesAppendOption(),
+                    validateShortStatisticsOption(),
+                    validateFullStatisticsOption(),
+                    validateInputFiles(),
+                    intFile,
+                    floatFile,
+                    stringFile
+            );
+        } catch (NoInputFilesException e) {
+            throw new ConfigCreationErrorException("Failed to get input files: " + e.getMessage());
+        }
     }
 
     private boolean isValidPath(String path) {
@@ -91,7 +105,7 @@ public class ArgsValidator {
         }
     }
 
-    private static boolean isValidPrefix(String prefix) {
+    private boolean isValidPrefix(String prefix) {
         try {
             Paths.get(prefix + DEFAULT_INT_OUTPUT_FILENAME_WITHOUT_PREFIX);
             return true;

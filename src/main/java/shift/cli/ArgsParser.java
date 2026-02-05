@@ -1,88 +1,56 @@
 package shift.cli;
 
-import org.apache.commons.cli.*;
+import lombok.extern.java.Log;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.ParseException;
+import shift.exceptions.ArgsParsingErrorException;
 
+import java.util.logging.Level;
+
+@Log
 public class ArgsParser {
     private final Options options;
     private final String[] args;
+    private final CommandLineParser parser;
 
     public ArgsParser(String[] args) {
         this.args = args;
         options = new Options();
+        setupOptions();
+        parser = new DefaultParser();
+    }
 
-//        Option outputDirectoryPathOption = Option
-//                .builder(String.valueOf(OptionNamesEnum.OUTPUT_DIRECTORY_PATH_OPTION_NAME))
-//                .hasArg()
-//                .desc("Sets a path for the output files")
-//                .get();
-//        Option outputFilesPrefixOption = Option
-//                .builder(String.valueOf(OptionNamesEnum.OUTPUT_FILES_NAME_PREFIX_OPTION_NAME))
-//                .hasArg()
-//                .desc("Adds prefix to the output files")
-//                .get();
-//        Option fileAppendOption = Option
-//                .builder(String.valueOf(OptionNamesEnum.OUTPUT_FILES_APPEND_OPTION_NAME))
-//                .desc("Appends to the existing files")
-//                .get();
-//        Option shortStatisticsOption = Option
-//                .builder(String.valueOf(OptionNamesEnum.SHORT_STATISTICS_OPTION_NAME))
-//                .desc("Outputs short statistics for the parsed files")
-//                .get();
-//        Option fullStatisticsOption = Option
-//                .builder(String.valueOf(OptionNamesEnum.FULL_STATISTICS_OPTION_NAME))
-//                .desc("Outputs full statistics for the parsed files")
-//                .get();
+    private void setupOptions() {
+        addOption(OptionNamesEnum.OUTPUT_DIRECTORY_PATH_OPTION_NAME.getOptionName(), true, "Sets a path for the output files");
+        addOption(OptionNamesEnum.OUTPUT_FILES_NAME_PREFIX_OPTION_NAME.getOptionName(), true, "Adds prefix to the output files");
+        addOption(OptionNamesEnum.OUTPUT_FILES_APPEND_OPTION_NAME.getOptionName(), false, "Appends to the existing files");
+        addOption(OptionNamesEnum.SHORT_STATISTICS_OPTION_NAME.getOptionName(), false, "Outputs short statistics for the parsed files");
+        addOption(OptionNamesEnum.FULL_STATISTICS_OPTION_NAME.getOptionName(), false, "Outputs full statistics for the parsed files");
+    }
 
-        Option outputDirectoryPathOption = new Option(
-                String.valueOf(OptionNamesEnum.OUTPUT_DIRECTORY_PATH_OPTION_NAME),
-                true,
-                "Sets a path for the output files"
-        );
-
-        Option outputFilesPrefixOption = new Option(
-                String.valueOf(OptionNamesEnum.OUTPUT_FILES_NAME_PREFIX_OPTION_NAME),
-                true,
-                "Adds prefix to the output files"
-        );
-
-        Option fileAppendOption = new Option(
-                String.valueOf(OptionNamesEnum.OUTPUT_FILES_APPEND_OPTION_NAME),
-                false,
-                "Appends to the existing files"
-        );
-
-        Option shortStatisticsOption = new Option(
-                String.valueOf(OptionNamesEnum.SHORT_STATISTICS_OPTION_NAME),
-                false,
-                "Outputs short statistics for the parsed files"
-        );
-
-        Option fullStatisticsOption = new Option(
-                String.valueOf(OptionNamesEnum.FULL_STATISTICS_OPTION_NAME),
-                false,
-                "Outputs full statistics for the parsed files"
-        );
-
-        options.addOption(outputDirectoryPathOption);
-        options.addOption(outputFilesPrefixOption);
-        options.addOption(fileAppendOption);
-        options.addOption(shortStatisticsOption);
-        options.addOption(fullStatisticsOption);
+    private void addOption(String optionName, boolean hasArg, String description) {
+        try {
+            options.addOption(new Option(optionName, hasArg, description));
+        } catch (IllegalArgumentException e) {
+            log.log(Level.WARNING, "Failed to create option " + optionName + ". Proceeding without using the specified option.");
+        }
     }
 
     public Args parse() {
-        CommandLineParser parser = new DefaultParser();
         CommandLine cmd;
-
         try {
             cmd = parser.parse(options, args);
         } catch (ParseException e) {
-            throw new RuntimeException("Failed to parse cmd args: " + e.getMessage());
+            throw new ArgsParsingErrorException(e.getMessage());
         }
 
         Args ret = new Args(cmd.getArgList());
         for (var option : cmd.getOptions()) {
-            ret.addOption(option.getArgName(), option.getValuesList());
+            ret.addOption(option.getOpt(), option.getValuesList());
         }
         return ret;
     }
