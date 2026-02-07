@@ -7,7 +7,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.ParseException;
-import shift.exceptions.ArgsParsingErrorException;
+import shift.exceptions.cli.ArgsParsingException;
 
 import java.util.logging.Level;
 
@@ -40,12 +40,12 @@ public class ArgsParser {
         }
     }
 
-    public Args parse() throws ArgsParsingErrorException {
+    public Args parse() throws ArgsParsingException {
         CommandLine cmd;
         try {
             cmd = parser.parse(options, args);
         } catch (ParseException e) {
-            throw new ArgsParsingErrorException(e.getMessage());
+            throw new ArgsParsingException(e.getMessage());
         }
 
         Args ret = new Args(cmd.getArgList());

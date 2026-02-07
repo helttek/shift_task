@@ -1,124 +1,55 @@
 package shift.io;
 
-import shift.config.WriterConfig;
+import lombok.extern.java.Log;
+import shift.exceptions.io.WriterException;
 
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
 
-public class Writer {
-    private final boolean append;
-    private final Path intFileName;
-    private final Path floatFileName;
-    private final Path stringFileName;
-    private FileWriter intWriter;
-    private FileWriter floatWriter;
-    private FileWriter stringWriter;
+@Log
+public class Writer<T> implements AutoCloseable {
+    protected final boolean append;
+    protected final Path fileName;
+    protected FileWriter fileWriter;
 
-    public Writer(WriterConfig cfg) {
-        intFileName = cfg.intFile();
-        floatFileName = cfg.floatFile();
-        stringFileName = cfg.stringFile();
-        append = cfg.append();
-        intWriter = null;
-        floatWriter = null;
-        stringWriter = null;
+    public Writer(Path file, boolean append) {
+        fileName = file;
+        this.append = append;
+        fileWriter = null;
     }
 
-    /**
-     *
-     * @return True if write was successful, false otherwise.
-     */
-    public boolean Write(int i) {
-        if (this.intWriter == null) {
+    public void write(T t) throws IOException {
+        prepareWriter();
+        writeImpl(t);
+    }
+
+    private void prepareWriter() {
+        if (fileWriter == null) {
             try {
-                this.intWriter = new FileWriter(intFileName.toFile(), append);
+                fileWriter = new FileWriter(fileName.toFile(), append);
             } catch (IOException e) {
-                System.err.println("Failed to create buffered writer for output file: " + e.getMessage());
-                return false;
+                throw new WriterException(e.getMessage());
             }
-        }
-        return WriteImpl(i, this.intWriter);
-    }
-
-    /**
-     *
-     * @return True if write was successful, false otherwise.
-     */
-    public boolean Write(float f) {
-        if (this.floatWriter == null) {
-            try {
-                this.floatWriter = new FileWriter(floatFileName.toFile(), append);
-            } catch (IOException e) {
-                System.err.println("Failed to create buffered writer for output file: " + e.getMessage());
-                return false;
-            }
-        }
-        return WriteImpl(f, this.floatWriter);
-    }
-
-    /**
-     *
-     * @return True if write was successful, false otherwise.
-     */
-    public boolean Write(String s) {
-        if (this.stringWriter == null) {
-            try {
-                this.stringWriter = new FileWriter(stringFileName.toFile(), append);
-            } catch (IOException e) {
-                System.err.println("Failed to create buffered writer for output file: " + e.getMessage());
-                return false;
-            }
-        }
-        return WriteImpl(s, this.stringWriter);
-    }
-
-    private <T> boolean WriteImpl(T t, FileWriter writer) {
-        try {
-            writer.write(t + System.lineSeparator());
-            return true;
-        } catch (IOException e) {
-            System.err.println("Failed to write to output file: " + e.getMessage());
-            return false;
         }
     }
 
-    public void Close() {
+    private void writeImpl(T t) throws IOException {
         try {
-            if (intWriter != null) {
-                intWriter.close();
-            }
+            fileWriter.write(t + System.lineSeparator());
         } catch (IOException e) {
-            System.err.println(e.getMessage());
-            try {
-                intWriter.flush();
-            } catch (IOException ex) {
-                System.err.println(e.getMessage());
-            }
+            log.warning("Failed to write payload \"" + t + "\" to output file \"" + fileName + "\": " + e.getMessage());
         }
+    }
+
+    @Override
+    public void close() {
         try {
-            if (floatWriter != null) {
-                floatWriter.close();
+            if (fileWriter != null) {
+                fileWriter.close();
             }
         } catch (IOException e) {
-            System.err.println(e.getMessage());
-            try {
-                floatWriter.flush();
-            } catch (IOException ex) {
-                System.err.println(e.getMessage());
-            }
-        }
-        try {
-            if (stringWriter != null) {
-                stringWriter.close();
-            }
-        } catch (IOException e) {
-            System.err.println(e.getMessage());
-            try {
-                stringWriter.flush();
-            } catch (IOException ex) {
-                System.err.println(e.getMessage());
-            }
+            throw new WriterException(e.getMessage());
         }
     }
 }

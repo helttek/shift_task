@@ -1,104 +1,98 @@
 package shift.core;
 
+import lombok.extern.java.Log;
+import shift.exceptions.core.FileSortingException;
+import shift.exceptions.core.LineSortingException;
+import shift.exceptions.io.ReaderException;
 import shift.io.Reader;
 import shift.io.Writer;
+import shift.statistics.ShortStatistics;
 import shift.statistics.Statistics;
 import shift.config.Config;
 
 import java.io.IOException;
+import java.util.Objects;
 
-public class Sorter {
+@Log
+public class Sorter implements AutoCloseable {
     private final Config cfg;
     private final Statistics stats;
-    private final Writer writer;
+    private final Writer<Integer> intWriter;
+    private final Writer<Float> floatWriter;
+    private final Writer<String> stringWriter;
 
-    public Sorter(Config cfg, Statistics stats, Writer writer) {
+    public Sorter(Config cfg, Statistics stats) {
         this.cfg = cfg;
-        this.stats = stats;
-        this.writer = writer;
+        this.stats = Objects.requireNonNullElseGet(stats, ShortStatistics::new);
+        this.intWriter = new Writer<>(cfg.intFile(), cfg.append());
+        this.floatWriter = new Writer<>(cfg.floatFile(), cfg.append());
+        this.stringWriter = new Writer<>(cfg.stringFile(), cfg.append());
     }
 
     public void sort() {
-        if (stats == null) {
-            for (var file : cfg.inputFiles()) {
-                sortFile(new Reader(file));
-            }
-            writer.Close();
-            return;
-        }
         for (var file : cfg.inputFiles()) {
-            sortFileWithStats(new Reader(file));
-        }
-        writer.Close();
-    }
-
-    private void sortFile(Reader reader) {
-        try {
-            String line = reader.readLine();
-            while (line != null) {
-                SortAndWriteLine(line);
-
-                try {
-                    line = reader.readLine();
-                } catch (IOException e) {
-                    System.err.println(e.getMessage());
-                }
+            try {
+                sortFile(file);
+                log.info("File \"" + file + "\" sorted successfully.");
+            } catch (FileSortingException e) {
+                log.warning("Failed to sort file \"" + file + "\": " + e.getMessage());
             }
-        } catch (IOException e) {
-            System.err.println(e.getMessage());
         }
     }
 
-    private void sortFileWithStats(Reader reader) {
-        try {
-            String line = reader.readLine();
-            while (line != null) {
-                SortWithStatsAndWriteLine(line);
-
-                try {
-                    line = reader.readLine();
-                } catch (IOException e) {
-                    System.err.println(e.getMessage());
-                }
+    private void sortFile(String file) throws FileSortingException {
+        try (Reader reader = new Reader(file)) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                sortLine(line);
             }
+        } catch (ReaderException | IOException e) {
+            throw new FileSortingException("Error processing file " + file + ": " + e.getMessage());
+        }
+    }
+
+    private void sortLine(String line) {
+        try {
+            if (tryParseInt(line)) return;
+            if (tryParseFloat(line)) return;
+
+            stringWriter.write(line);
+            stats.collect(line);
         } catch (IOException e) {
-            System.err.println(e.getMessage());
+            throw new LineSortingException("Write error: " + e.getMessage());
         }
     }
 
-    private void SortAndWriteLine(String line) {
-        try {
-            writer.Write(Integer.parseInt(line));
-            return;
-        } catch (NumberFormatException ignored) {
-        }
-        try {
-            writer.Write(Float.parseFloat(line));
-            return;
-        } catch (NumberFormatException ignored) {
-        }
-        writer.Write(line);
-    }
-
-    private void SortWithStatsAndWriteLine(String line) {
+    private boolean tryParseInt(String line) throws IOException {
         try {
             int i = Integer.parseInt(line);
-            if (writer.Write(i)) {
-                stats.collect(i);
-            }
-            return;
-        } catch (NumberFormatException ignored) {
+            intWriter.write(i);
+            stats.collect(i);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
         }
+    }
+
+    private boolean tryParseFloat(String line) throws IOException {
         try {
-            float d = Float.parseFloat(line);
-            if (writer.Write(d)) {
-                stats.collect(d);
-            }
-            return;
-        } catch (NumberFormatException ignored) {
+            float f = Float.parseFloat(line);
+            floatWriter.write(f);
+            stats.collect(f);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
         }
-        if (writer.Write(line)) {
-            stats.collect(line);
+    }
+
+    @Override
+    public void close() {
+        try {
+            intWriter.close();
+            floatWriter.close();
+            stringWriter.close();
+        } catch (Exception e) {
+            log.severe("Failed to safely close output writers: " + e.getMessage());
         }
     }
 }

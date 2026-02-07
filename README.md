@@ -25,3 +25,7 @@ X - version (current is 0.1)
 ```bash
 java -jar target/FileContentSorter-X.jar
 ```
+
+## Implementation details
+
+If the statistics weren't set to be displayed, they will still be collected, just not printed.

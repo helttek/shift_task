@@ -36,24 +36,45 @@ public class FullStatistics extends Statistics {
     @Override
     public void print() {
         System.out.println("---------------STATISTICS-----------------");
+
+        printInt();
+        System.out.println();
+
+        printFloat();
+        System.out.println();
+
+        printStrings();
+    }
+
+    private void printInt() {
         System.out.println("INTEGERS");
         System.out.println("Amount: " + intNum);
-        System.out.println("Smallest: " + minInt);
-        System.out.println("Biggest: " + maxInt);
-        System.out.println("Sum: " + intSum);
-        System.out.println("Average: " + intAvg);
-        System.out.println();
+        if (intNum > 0) {
+            System.out.println("Smallest: " + minInt);
+            System.out.println("Biggest: " + maxInt);
+            System.out.println("Sum: " + intSum);
+            System.out.println("Average: " + intAvg);
+        }
+    }
+
+    private void printFloat() {
         System.out.println("FLOATS");
         System.out.println("Amount: " + floatNum);
-        System.out.println("Smallest: " + minFloat);
-        System.out.println("Biggest: " + maxFloat);
-        System.out.println("Sum: " + floatSum);
-        System.out.println("Average: " + floatAvg);
-        System.out.println();
+        if (floatNum > 0) {
+            System.out.println("Smallest: " + minFloat);
+            System.out.println("Biggest: " + maxFloat);
+            System.out.println("Sum: " + floatSum);
+            System.out.println("Average: " + floatAvg);
+        }
+    }
+
+    private void printStrings() {
         System.out.println("STRINGS");
         System.out.println("Amount: " + strNum);
-        System.out.println("Shortest: " + shortestStr);
-        System.out.println("Longest: " + longestStr);
+        if (strNum > 0) {
+            System.out.println("Shortest: " + shortestStr);
+            System.out.println("Longest: " + longestStr);
+        }
     }
 
     @Override

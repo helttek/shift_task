@@ -1,25 +1,32 @@
 package shift.io;
 
+import shift.exceptions.io.ReaderException;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
-public class Reader {
-    private BufferedReader reader;
+public class Reader implements AutoCloseable {
+    private final BufferedReader reader;
 
-    public Reader(String fileName) {
+    public Reader(String fileName) throws ReaderException {
         try {
-            this.reader = new BufferedReader(new FileReader(fileName));
+            reader = new BufferedReader(new FileReader(fileName));
         } catch (IOException e) {
-            System.out.println("Failed to find file \"" + fileName + "\".");
+            throw new ReaderException(e.getMessage());
         }
     }
 
     public String readLine() throws IOException {
+        return reader.readLine();
+    }
+
+    @Override
+    public void close() throws ReaderException {
         try {
-            return reader.readLine();
+            reader.close();
         } catch (IOException e) {
-            throw new IOException("Failed to read from file: " + e.getMessage());
+            throw new ReaderException(e.getMessage());
         }
     }
 }

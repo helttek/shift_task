@@ -1,38 +1,36 @@
 package shift;
 
 import shift.core.Sorter;
-import shift.io.Writer;
 import shift.statistics.FullStatistics;
 import shift.statistics.ShortStatistics;
 import shift.statistics.Statistics;
 import shift.cli.ArgsParser;
 import shift.cli.ArgsValidator;
 import shift.config.Config;
-import shift.exceptions.ArgsParsingErrorException;
-import shift.exceptions.ConfigCreationErrorException;
-import shift.exceptions.FileContentSorterCreationErrorException;
+import shift.exceptions.cli.ArgsParsingException;
+import shift.exceptions.config.ConfigCreationException;
+import shift.exceptions.FileContentSorterException;
 
 public class FileContentSorter {
     private Statistics stats;
     private final Sorter sorter;
 
     //TODO:
-    // - add custom expressions for errors in config parsing, validating
     // - add comments wherever it's necessary
 
-    public FileContentSorter(String[] args) throws FileContentSorterCreationErrorException {
+    public FileContentSorter(String[] args) throws FileContentSorterException {
         ArgsParser argsParser = new ArgsParser(args);
         ArgsValidator argsValidator;
         try {
             argsValidator = new ArgsValidator(argsParser.parse());
-        } catch (ArgsParsingErrorException e) {
-            throw new FileContentSorterCreationErrorException("Failed to parse command line arguments: " + e.getMessage());
+        } catch (ArgsParsingException e) {
+            throw new FileContentSorterException("Failed to parse command line arguments: " + e.getMessage());
         }
         Config cfg;
         try {
             cfg = argsValidator.getConfig();
-        } catch (ConfigCreationErrorException e) {
-            throw new FileContentSorterCreationErrorException("Failed to create a config: " + e.getMessage());
+        } catch (ConfigCreationException e) {
+            throw new FileContentSorterException("Failed to create a config: " + e.getMessage());
         }
 
         stats = null;
@@ -43,7 +41,7 @@ public class FileContentSorter {
             stats = new FullStatistics();
         }
 
-        sorter = new Sorter(cfg, stats, new Writer(cfg.getWriterConfig()));
+        sorter = new Sorter(cfg, stats);
     }
 
     public void start() {

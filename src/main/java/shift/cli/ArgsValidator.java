@@ -2,8 +2,8 @@ package shift.cli;
 
 import lombok.extern.java.Log;
 import shift.config.Config;
-import shift.exceptions.ConfigCreationErrorException;
-import shift.exceptions.NoInputFilesException;
+import shift.exceptions.config.ConfigCreationException;
+import shift.exceptions.cli.NoInputException;
 
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
@@ -62,18 +62,18 @@ public class ArgsValidator {
         return args.GetOption(OptionNamesEnum.FULL_STATISTICS_OPTION_NAME.getOptionName()) != null;
     }
 
-    private List<String> validateInputFiles() throws NoInputFilesException {
+    private List<String> validateInputFiles() throws NoInputException {
         List<String> validFiles = args.getInputFiles().stream()
                 .filter(this::isValidPath)
                 .toList();
 
         if (validFiles.isEmpty()) {
-            throw new NoInputFilesException("No valid input files provided. Check your file paths.");
+            throw new NoInputException("No valid input files provided. Check your file paths.");
         }
         return validFiles;
     }
 
-    public Config getConfig() throws ConfigCreationErrorException {
+    public Config getConfig() throws ConfigCreationException {
         String outputFilesNamePrefix = validateOutputFilesNamePrefixOption();
         String outputDirectoryPath = validateOutputDirectoryPathOption();
 
@@ -91,8 +91,8 @@ public class ArgsValidator {
                     floatFile,
                     stringFile
             );
-        } catch (NoInputFilesException e) {
-            throw new ConfigCreationErrorException("Failed to get input files: " + e.getMessage());
+        } catch (NoInputException e) {
+            throw new ConfigCreationException("Failed to get input files: " + e.getMessage());
         }
     }
 

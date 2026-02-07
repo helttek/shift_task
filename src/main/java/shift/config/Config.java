@@ -12,7 +12,4 @@ public record Config(
         Path floatFile,
         Path stringFile
 ) {
-    public WriterConfig getWriterConfig() {
-        return new WriterConfig(intFile, floatFile, stringFile, append);
-    }
 }
