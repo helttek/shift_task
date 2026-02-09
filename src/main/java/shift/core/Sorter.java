@@ -4,6 +4,7 @@ import lombok.extern.java.Log;
 import shift.exceptions.core.FileSortingException;
 import shift.exceptions.core.LineSortingException;
 import shift.exceptions.io.ReaderException;
+import shift.io.IWriter;
 import shift.io.Reader;
 import shift.io.Writer;
 import shift.statistics.ShortStatistics;
@@ -17,9 +18,9 @@ import java.util.Objects;
 public class Sorter implements AutoCloseable {
     private final Config cfg;
     private final Statistics stats;
-    private final Writer<Integer> intWriter;
-    private final Writer<Float> floatWriter;
-    private final Writer<String> stringWriter;
+    private final IWriter<Integer> intWriter;
+    private final IWriter<Float> floatWriter;
+    private final IWriter<String> stringWriter;
 
     public Sorter(Config cfg, Statistics stats) {
         this.cfg = cfg;

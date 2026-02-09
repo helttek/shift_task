@@ -25,11 +25,9 @@ public class ArgsParser {
     }
 
     private void setupOptions() {
-        addOption(OptionNamesEnum.OUTPUT_DIRECTORY_PATH_OPTION_NAME.getOptionName(), true, "Sets a path for the output files");
-        addOption(OptionNamesEnum.OUTPUT_FILES_NAME_PREFIX_OPTION_NAME.getOptionName(), true, "Adds prefix to the output files");
-        addOption(OptionNamesEnum.OUTPUT_FILES_APPEND_OPTION_NAME.getOptionName(), false, "Appends to the existing files");
-        addOption(OptionNamesEnum.SHORT_STATISTICS_OPTION_NAME.getOptionName(), false, "Outputs short statistics for the parsed files");
-        addOption(OptionNamesEnum.FULL_STATISTICS_OPTION_NAME.getOptionName(), false, "Outputs full statistics for the parsed files");
+        for (OptionEnum opt : OptionEnum.values()) {
+            addOption(opt.getShortName(), opt.isHasArgs(), opt.getDescription());
+        }
     }
 
     private void addOption(String optionName, boolean hasArg, String description) {

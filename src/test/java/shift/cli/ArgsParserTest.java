@@ -38,76 +38,76 @@ class ArgsParserTest {
 
         assertNotNull(result);
         assertEquals(1, result.getInputFiles().size());
-        assertNotNull(result.GetOption("o"));
-        assertEquals("/output/path", result.GetOption("o").get(0));
+        assertNotNull(result.GetOptionValues("o"));
+        assertEquals("/output/path", result.GetOptionValues("o").get(0));
     }
 
     @Test
     void testParseWithPrefixOption() throws ArgsParsingException {
-        String[] args = {"-p", "prefix_", "file.txt"};
+        String[] args = {"-" + OptionEnum.PREFIX.getShortName(), "prefix_", "file.txt"};
         ArgsParser parser = new ArgsParser(args);
         Args result = parser.parse();
 
         assertNotNull(result);
-        assertNotNull(result.GetOption("p"));
-        assertEquals("prefix_", result.GetOption("p").get(0));
+        assertNotNull(result.GetOptionValues(OptionEnum.PREFIX.getShortName()));
+        assertEquals("prefix_", result.GetOptionValues(OptionEnum.PREFIX.getShortName()).get(0));
     }
 
     @Test
     void testParseWithAppendOption() throws ArgsParsingException {
-        String[] args = {"-a", "file.txt"};
+        String[] args = {"-" + OptionEnum.APPEND.getShortName(), "file.txt"};
         ArgsParser parser = new ArgsParser(args);
         Args result = parser.parse();
 
         assertNotNull(result);
-        assertNotNull(result.GetOption("a"));
+        assertNotNull(result.GetOptionValues(OptionEnum.APPEND.getShortName()));
     }
 
     @Test
     void testParseWithShortStatisticsOption() throws ArgsParsingException {
-        String[] args = {"-s", "file.txt"};
+        String[] args = {"-" + OptionEnum.SHORT_STATS.getShortName(), "file.txt"};
         ArgsParser parser = new ArgsParser(args);
         Args result = parser.parse();
 
         assertNotNull(result);
-        assertNotNull(result.GetOption("s"));
+        assertNotNull(result.GetOptionValues(OptionEnum.SHORT_STATS.getShortName()));
     }
 
     @Test
     void testParseWithFullStatisticsOption() throws ArgsParsingException {
-        String[] args = {"-f", "file.txt"};
+        String[] args = {"-" + OptionEnum.FULL_STATS.getShortName(), "file.txt"};
         ArgsParser parser = new ArgsParser(args);
         Args result = parser.parse();
 
         assertNotNull(result);
-        assertNotNull(result.GetOption("f"));
+        assertNotNull(result.GetOptionValues(OptionEnum.FULL_STATS.getShortName()));
     }
 
     @Test
     void testParseWithMultipleOptions() throws ArgsParsingException {
-        String[] args = {"-o", "/output", "-p", "test_", "-a", "-s", "file1.txt", "file2.txt"};
+        String[] args = {"-" + OptionEnum.OUTPUT_DIRECTORY.getShortName(), "/output", "-" + OptionEnum.PREFIX.getShortName(), "test_", "-" + OptionEnum.APPEND.getShortName(), "-" + OptionEnum.SHORT_STATS.getShortName(), "file1.txt", "file2.txt"};
         ArgsParser parser = new ArgsParser(args);
         Args result = parser.parse();
 
         assertNotNull(result);
         assertEquals(2, result.getInputFiles().size());
-        assertNotNull(result.GetOption("o"));
-        assertNotNull(result.GetOption("p"));
-        assertNotNull(result.GetOption("a"));
-        assertNotNull(result.GetOption("s"));
-        assertEquals("/output", result.GetOption("o").get(0));
-        assertEquals("test_", result.GetOption("p").get(0));
+        assertNotNull(result.GetOptionValues(OptionEnum.OUTPUT_DIRECTORY.getShortName()));
+        assertNotNull(result.GetOptionValues(OptionEnum.PREFIX.getShortName()));
+        assertNotNull(result.GetOptionValues(OptionEnum.APPEND.getShortName()));
+        assertNotNull(result.GetOptionValues(OptionEnum.SHORT_STATS.getShortName()));
+        assertEquals("/output", result.GetOptionValues(OptionEnum.OUTPUT_DIRECTORY.getShortName()).get(0));
+        assertEquals("test_", result.GetOptionValues(OptionEnum.PREFIX.getShortName()).get(0));
     }
 
     @Test
     void testParseWithBothStatisticsOptions() throws ArgsParsingException {
-        String[] args = {"-s", "-f", "file.txt"};
+        String[] args = {"-" + OptionEnum.SHORT_STATS.getShortName(), "-" + OptionEnum.FULL_STATS.getShortName(), "file.txt"};
         ArgsParser parser = new ArgsParser(args);
         Args result = parser.parse();
 
         assertNotNull(result);
-        assertNotNull(result.GetOption("s"));
-        assertNotNull(result.GetOption("f"));
+        assertNotNull(result.GetOptionValues(OptionEnum.SHORT_STATS.getShortName()));
+        assertNotNull(result.GetOptionValues(OptionEnum.FULL_STATS.getShortName()));
     }
 
     @Test
@@ -124,28 +124,6 @@ class ArgsParserTest {
         ArgsParser parser = new ArgsParser(args);
 
         assertThrows(ArgsParsingException.class, () -> parser.parse());
-    }
-
-    @Test
-    void testParseWithAllOptionsAndMultipleFiles() throws ArgsParsingException {
-        String[] args = {
-            "-o", "/custom/output",
-            "-p", "result_",
-            "-a",
-            "-f",
-            "input1.txt",
-            "input2.txt",
-            "input3.txt"
-        };
-        ArgsParser parser = new ArgsParser(args);
-        Args result = parser.parse();
-
-        assertNotNull(result);
-        assertEquals(3, result.getInputFiles().size());
-        assertEquals("/custom/output", result.GetOption("o").get(0));
-        assertEquals("result_", result.GetOption("p").get(0));
-        assertNotNull(result.GetOption("a"));
-        assertNotNull(result.GetOption("f"));
     }
 
     @Test

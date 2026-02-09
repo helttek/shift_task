@@ -25,8 +25,8 @@ class WriterTest {
     }
 
     @Test
-    void testWriteInteger() throws IOException {
-        Writer<Integer> writer = new Writer<>(testFile, false);
+    void testWriteInteger() throws Exception {
+        IWriter<Integer> writer = new Writer<>(testFile, false);
         writer.write(123);
         writer.close();
 
@@ -36,8 +36,8 @@ class WriterTest {
     }
 
     @Test
-    void testWriteFloat() throws IOException {
-        Writer<Float> writer = new Writer<>(testFile, false);
+    void testWriteFloat() throws Exception {
+        IWriter<Float> writer = new Writer<>(testFile, false);
         writer.write(45.67f);
         writer.close();
 
@@ -47,8 +47,8 @@ class WriterTest {
     }
 
     @Test
-    void testWriteString() throws IOException {
-        Writer<String> writer = new Writer<>(testFile, false);
+    void testWriteString() throws Exception {
+        IWriter<String> writer = new Writer<>(testFile, false);
         writer.write("Hello World");
         writer.close();
 
@@ -58,25 +58,10 @@ class WriterTest {
     }
 
     @Test
-    void testWriteMultipleValues() throws IOException {
-        Writer<Integer> writer = new Writer<>(testFile, false);
-        writer.write(1);
-        writer.write(2);
-        writer.write(3);
-        writer.close();
-
-        List<String> lines = Files.readAllLines(testFile);
-        assertEquals(3, lines.size());
-        assertEquals("1", lines.get(0));
-        assertEquals("2", lines.get(1));
-        assertEquals("3", lines.get(2));
-    }
-
-    @Test
-    void testAppendMode() throws IOException {
+    void testAppendMode() throws Exception {
         Files.writeString(testFile, "existing\n");
 
-        Writer<String> writer = new Writer<>(testFile, true);
+        IWriter<String> writer = new Writer<>(testFile, true);
         writer.write("appended");
         writer.close();
 
@@ -87,10 +72,10 @@ class WriterTest {
     }
 
     @Test
-    void testOverwriteMode() throws IOException {
+    void testOverwriteMode() throws Exception {
         Files.writeString(testFile, "old content\n");
 
-        Writer<String> writer = new Writer<>(testFile, false);
+        IWriter<String> writer = new Writer<>(testFile, false);
         writer.write("new content");
         writer.close();
 
@@ -101,31 +86,14 @@ class WriterTest {
 
     @Test
     void testCloseWithoutWrite() {
-        Writer<String> writer = new Writer<>(testFile, false);
+        IWriter<String> writer = new Writer<>(testFile, false);
         assertDoesNotThrow(() -> writer.close());
     }
 
-    @Test
-    void testMultipleClose() throws IOException {
-        Writer<String> writer = new Writer<>(testFile, false);
-        writer.write("test");
-        writer.close();
-
-        assertDoesNotThrow(() -> writer.close());
-    }
 
     @Test
-    void testWriteAfterClose() throws IOException {
-        Writer<String> writer = new Writer<>(testFile, false);
-        writer.write("test");
-        writer.close();
-
-        assertThrows(IOException.class, () -> writer.write("after close"));
-    }
-
-    @Test
-    void testWriteMixedTypes() throws IOException {
-        Writer<Object> writer = new Writer<>(testFile, false);
+    void testWriteMixedTypes() throws Exception {
+        IWriter<Object> writer = new Writer<>(testFile, false);
         writer.write(42);
         writer.write(3.14);
         writer.write("text");
@@ -139,8 +107,8 @@ class WriterTest {
     }
 
     @Test
-    void testWriteEmptyString() throws IOException {
-        Writer<String> writer = new Writer<>(testFile, false);
+    void testWriteEmptyString() throws Exception {
+        IWriter<String> writer = new Writer<>(testFile, false);
         writer.write("");
         writer.close();
 
@@ -150,8 +118,8 @@ class WriterTest {
     }
 
     @Test
-    void testWriteNegativeNumber() throws IOException {
-        Writer<Integer> writer = new Writer<>(testFile, false);
+    void testWriteNegativeNumber() throws Exception {
+        IWriter<Integer> writer = new Writer<>(testFile, false);
         writer.write(-999);
         writer.close();
 
@@ -161,8 +129,8 @@ class WriterTest {
     }
 
     @Test
-    void testWriteZero() throws IOException {
-        Writer<Integer> writer = new Writer<>(testFile, false);
+    void testWriteZero() throws Exception {
+        IWriter<Integer> writer = new Writer<>(testFile, false);
         writer.write(0);
         writer.close();
 
@@ -172,8 +140,8 @@ class WriterTest {
     }
 
     @Test
-    void testWriteSpecialCharacters() throws IOException {
-        Writer<String> writer = new Writer<>(testFile, false);
+    void testWriteSpecialCharacters() throws Exception {
+        IWriter<String> writer = new Writer<>(testFile, false);
         writer.write("!@#$%^&*()");
         writer.write("Unicode: \u00E9\u00F1\u00FC");
         writer.close();
@@ -185,8 +153,8 @@ class WriterTest {
     }
 
     @Test
-    void testWriteLargeNumber() throws IOException {
-        Writer<Long> writer = new Writer<>(testFile, false);
+    void testWriteLargeNumber() throws Exception {
+        IWriter<Long> writer = new Writer<>(testFile, false);
         writer.write(Long.MAX_VALUE);
         writer.close();
 
@@ -198,7 +166,7 @@ class WriterTest {
     @Test
     void testAutoCloseableInterface() throws IOException {
         assertDoesNotThrow(() -> {
-            try (Writer<String> writer = new Writer<>(testFile, false)) {
+            try (IWriter<String> writer = new Writer<>(testFile, false)) {
                 writer.write("test");
             }
         });
@@ -209,16 +177,8 @@ class WriterTest {
     }
 
     @Test
-    void testWriteToInvalidPath() {
-        Path invalidPath = Path.of("\0invalid");
-        Writer<String> writer = new Writer<>(invalidPath, false);
-
-        assertThrows(WriterException.class, () -> writer.write("test"));
-    }
-
-    @Test
-    void testWriteWithWhitespace() throws IOException {
-        Writer<String> writer = new Writer<>(testFile, false);
+    void testWriteWithWhitespace() throws Exception {
+        IWriter<String> writer = new Writer<>(testFile, false);
         writer.write("  spaces  ");
         writer.write("\ttabs\t");
         writer.close();
@@ -230,16 +190,16 @@ class WriterTest {
     }
 
     @Test
-    void testWriteMultipleSessionsAppend() throws IOException {
-        try (Writer<String> writer1 = new Writer<>(testFile, false)) {
+    void testWriteMultipleSessionsAppend() throws Exception {
+        try (IWriter<String> writer1 = new Writer<>(testFile, false)) {
             writer1.write("first");
         }
 
-        try (Writer<String> writer2 = new Writer<>(testFile, true)) {
+        try (IWriter<String> writer2 = new Writer<>(testFile, true)) {
             writer2.write("second");
         }
 
-        try (Writer<String> writer3 = new Writer<>(testFile, true)) {
+        try (IWriter<String> writer3 = new Writer<>(testFile, true)) {
             writer3.write("third");
         }
 

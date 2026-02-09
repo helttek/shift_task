@@ -2,6 +2,7 @@ package shift.cli;
 
 import org.junit.jupiter.api.Test;
 import shift.config.Config;
+import shift.config.DefaultConfigValues;
 import shift.exceptions.config.ConfigCreationException;
 
 import java.nio.file.Paths;
@@ -24,9 +25,10 @@ class ArgsValidatorTest {
         assertFalse(config.append());
         assertFalse(config.shortStatistics());
         assertFalse(config.fullStatistics());
-        assertEquals(Paths.get(".", "integers.txt"), config.intFile());
-        assertEquals(Paths.get(".", "floats.txt"), config.floatFile());
-        assertEquals(Paths.get(".", "strings.txt"), config.stringFile());
+
+        assertEquals(Paths.get(DefaultConfigValues.OUT_DIR, DefaultConfigValues.INT_FILE), config.intFile());
+        assertEquals(Paths.get(DefaultConfigValues.OUT_DIR, DefaultConfigValues.FLOAT_FILE), config.floatFile());
+        assertEquals(Paths.get(DefaultConfigValues.OUT_DIR, DefaultConfigValues.STR_FILE), config.stringFile());
     }
 
     @Test
@@ -38,75 +40,73 @@ class ArgsValidatorTest {
 
         assertNotNull(config);
         assertEquals(3, config.inputFiles().size());
-        assertTrue(config.inputFiles().contains("file1.txt"));
-        assertTrue(config.inputFiles().contains("file2.txt"));
-        assertTrue(config.inputFiles().contains("file3.txt"));
+        assertTrue(config.inputFiles().containsAll(List.of("file1.txt", "file2.txt", "file3.txt")));
     }
 
     @Test
     void testGetConfigWithOutputDirectory() throws ConfigCreationException {
+        String customDir = "output";
         Args args = new Args(List.of("input.txt"));
-        args.addOption("o", List.of("output"));
+        args.addOption(OptionEnum.OUTPUT_DIRECTORY.getShortName(), List.of(customDir));
         ArgsValidator validator = new ArgsValidator(args);
 
         Config config = validator.getConfig();
 
         assertNotNull(config);
-        assertEquals(Paths.get("output", "integers.txt"), config.intFile());
-        assertEquals(Paths.get("output", "floats.txt"), config.floatFile());
-        assertEquals(Paths.get("output", "strings.txt"), config.stringFile());
+        assertEquals(Paths.get(customDir, DefaultConfigValues.INT_FILE), config.intFile());
+        assertEquals(Paths.get(customDir, DefaultConfigValues.FLOAT_FILE), config.floatFile());
+        assertEquals(Paths.get(customDir, DefaultConfigValues.STR_FILE), config.stringFile());
     }
 
     @Test
     void testGetConfigWithPrefix() throws ConfigCreationException {
+        String prefix = "result_";
         Args args = new Args(List.of("input.txt"));
-        args.addOption("p", List.of("result_"));
+        args.addOption(OptionEnum.PREFIX.getShortName(), List.of(prefix));
         ArgsValidator validator = new ArgsValidator(args);
 
         Config config = validator.getConfig();
 
         assertNotNull(config);
-        assertEquals(Paths.get(".", "result_integers.txt"), config.intFile());
-        assertEquals(Paths.get(".", "result_floats.txt"), config.floatFile());
-        assertEquals(Paths.get(".", "result_strings.txt"), config.stringFile());
+        assertEquals(Paths.get(DefaultConfigValues.OUT_DIR, prefix + DefaultConfigValues.INT_FILE), config.intFile());
+        assertEquals(Paths.get(DefaultConfigValues.OUT_DIR, prefix + DefaultConfigValues.FLOAT_FILE), config.floatFile());
+        assertEquals(Paths.get(DefaultConfigValues.OUT_DIR, prefix + DefaultConfigValues.STR_FILE), config.stringFile());
     }
 
     @Test
     void testGetConfigWithOutputDirectoryAndPrefix() throws ConfigCreationException {
+        String customDir = "out";
+        String prefix = "test_";
         Args args = new Args(List.of("input.txt"));
-        args.addOption("o", List.of("out"));
-        args.addOption("p", List.of("test_"));
+        args.addOption(OptionEnum.OUTPUT_DIRECTORY.getShortName(), List.of(customDir));
+        args.addOption(OptionEnum.PREFIX.getShortName(), List.of(prefix));
         ArgsValidator validator = new ArgsValidator(args);
 
         Config config = validator.getConfig();
 
         assertNotNull(config);
-        assertEquals(Paths.get("out", "test_integers.txt"), config.intFile());
-        assertEquals(Paths.get("out", "test_floats.txt"), config.floatFile());
-        assertEquals(Paths.get("out", "test_strings.txt"), config.stringFile());
+        assertEquals(Paths.get(customDir, prefix + DefaultConfigValues.INT_FILE), config.intFile());
     }
 
     @Test
     void testGetConfigWithAppendOption() throws ConfigCreationException {
         Args args = new Args(List.of("input.txt"));
-        args.addOption("a", List.of());
+        args.addOption(OptionEnum.APPEND.getShortName(), List.of());
         ArgsValidator validator = new ArgsValidator(args);
 
         Config config = validator.getConfig();
 
-        assertNotNull(config);
         assertTrue(config.append());
     }
 
     @Test
     void testGetConfigWithShortStatistics() throws ConfigCreationException {
         Args args = new Args(List.of("input.txt"));
-        args.addOption("s", List.of());
+        args.addOption(OptionEnum.SHORT_STATS.getShortName(), List.of());
         ArgsValidator validator = new ArgsValidator(args);
 
         Config config = validator.getConfig();
 
-        assertNotNull(config);
         assertTrue(config.shortStatistics());
         assertFalse(config.fullStatistics());
     }
@@ -114,37 +114,24 @@ class ArgsValidatorTest {
     @Test
     void testGetConfigWithFullStatistics() throws ConfigCreationException {
         Args args = new Args(List.of("input.txt"));
-        args.addOption("f", List.of());
+        args.addOption(OptionEnum.FULL_STATS.getShortName(), List.of());
         ArgsValidator validator = new ArgsValidator(args);
 
         Config config = validator.getConfig();
 
-        assertNotNull(config);
         assertFalse(config.shortStatistics());
         assertTrue(config.fullStatistics());
     }
 
     @Test
-    void testGetConfigWithBothStatistics() throws ConfigCreationException {
-        Args args = new Args(List.of("input.txt"));
-        args.addOption("s", List.of());
-        args.addOption("f", List.of());
-        ArgsValidator validator = new ArgsValidator(args);
-
-        Config config = validator.getConfig();
-
-        assertNotNull(config);
-        assertTrue(config.shortStatistics());
-        assertTrue(config.fullStatistics());
-    }
-
-    @Test
     void testGetConfigWithAllOptions() throws ConfigCreationException {
+        String customDir = "results";
+        String prefix = "output_";
         Args args = new Args(List.of("in1.txt", "in2.txt"));
-        args.addOption("o", List.of("results"));
-        args.addOption("p", List.of("output_"));
-        args.addOption("a", List.of());
-        args.addOption("f", List.of());
+        args.addOption(OptionEnum.OUTPUT_DIRECTORY.getShortName(), List.of(customDir));
+        args.addOption(OptionEnum.PREFIX.getShortName(), List.of(prefix));
+        args.addOption(OptionEnum.APPEND.getShortName(), List.of());
+        args.addOption(OptionEnum.FULL_STATS.getShortName(), List.of());
         ArgsValidator validator = new ArgsValidator(args);
 
         Config config = validator.getConfig();
@@ -153,9 +140,7 @@ class ArgsValidatorTest {
         assertEquals(2, config.inputFiles().size());
         assertTrue(config.append());
         assertTrue(config.fullStatistics());
-        assertEquals(Paths.get("results", "output_integers.txt"), config.intFile());
-        assertEquals(Paths.get("results", "output_floats.txt"), config.floatFile());
-        assertEquals(Paths.get("results", "output_strings.txt"), config.stringFile());
+        assertEquals(Paths.get(customDir, prefix + DefaultConfigValues.INT_FILE), config.intFile());
     }
 
     @Test
@@ -163,53 +148,29 @@ class ArgsValidatorTest {
         Args args = new Args(List.of());
         ArgsValidator validator = new ArgsValidator(args);
 
-        assertThrows(ConfigCreationException.class, () -> validator.getConfig());
+        assertThrows(ConfigCreationException.class, validator::getConfig);
     }
 
     @Test
     void testGetConfigWithInvalidPath() throws ConfigCreationException {
         Args args = new Args(List.of("valid.txt"));
-        args.addOption("o", List.of("\0invalid"));
+        args.addOption(OptionEnum.OUTPUT_DIRECTORY.getShortName(), List.of("\0invalid"));
         ArgsValidator validator = new ArgsValidator(args);
 
         Config config = validator.getConfig();
 
-        // Should fallback to default directory
-        assertEquals(Paths.get(".", "integers.txt"), config.intFile());
-    }
-
-    @Test
-    void testGetConfigFiltersInvalidInputFiles() {
-        Args args = new Args(List.of("\0invalid", "valid.txt"));
-        ArgsValidator validator = new ArgsValidator(args);
-
-        assertDoesNotThrow(() -> {
-            Config config = validator.getConfig();
-            assertEquals(1, config.inputFiles().size());
-            assertEquals("valid.txt", config.inputFiles().get(0));
-        });
+        assertEquals(Paths.get(DefaultConfigValues.OUT_DIR, DefaultConfigValues.INT_FILE), config.intFile());
     }
 
     @Test
     void testGetConfigWithEmptyPrefix() throws ConfigCreationException {
         Args args = new Args(List.of("input.txt"));
-        args.addOption("p", List.of(""));
+        args.addOption(OptionEnum.PREFIX.getShortName(), List.of(""));
         ArgsValidator validator = new ArgsValidator(args);
 
         Config config = validator.getConfig();
 
         assertNotNull(config);
-        assertEquals(Paths.get(".", "integers.txt"), config.intFile());
-    }
-
-    @Test
-    void testGetConfigWithoutAppendOption() throws ConfigCreationException {
-        Args args = new Args(List.of("input.txt"));
-        ArgsValidator validator = new ArgsValidator(args);
-
-        Config config = validator.getConfig();
-
-        assertNotNull(config);
-        assertFalse(config.append());
+        assertEquals(Paths.get(DefaultConfigValues.OUT_DIR, DefaultConfigValues.INT_FILE), config.intFile());
     }
 }

@@ -15,9 +15,6 @@ public class FileContentSorter {
     private Statistics stats;
     private final Sorter sorter;
 
-    //TODO:
-    // - add comments wherever it's necessary
-
     public FileContentSorter(String[] args) throws FileContentSorterException {
         ArgsParser argsParser = new ArgsParser(args);
         ArgsValidator argsValidator;

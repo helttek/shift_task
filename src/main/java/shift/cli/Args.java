@@ -1,5 +1,6 @@
 package shift.cli;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -9,7 +10,7 @@ public class Args {
     private final HashMap<String, List<String>> options;
 
     public Args(List<String> files) {
-        this.files = files;
+        this.files = new ArrayList<>(files);
         this.options = new HashMap<>();
     }
 
@@ -21,7 +22,7 @@ public class Args {
         return Collections.unmodifiableList(files);
     }
 
-    public List<String> GetOption(String key) {
+    public List<String> GetOptionValues(String key) {
         return options.get(key);
     }
 

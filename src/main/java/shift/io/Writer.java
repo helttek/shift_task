@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 
 @Log
-public class Writer<T> implements AutoCloseable {
+public class Writer<T> implements IWriter<T> {
     protected final boolean append;
     protected final Path fileName;
     protected FileWriter fileWriter;
@@ -19,6 +19,7 @@ public class Writer<T> implements AutoCloseable {
         fileWriter = null;
     }
 
+    @Override
     public void write(T t) throws IOException {
         prepareWriter();
         writeImpl(t);
@@ -34,7 +35,7 @@ public class Writer<T> implements AutoCloseable {
         }
     }
 
-    private void writeImpl(T t) throws IOException {
+    private void writeImpl(T t) {
         try {
             fileWriter.write(t + System.lineSeparator());
         } catch (IOException e) {
@@ -43,7 +44,7 @@ public class Writer<T> implements AutoCloseable {
     }
 
     @Override
-    public void close() {
+    public void close() throws WriterException {
         try {
             if (fileWriter != null) {
                 fileWriter.close();

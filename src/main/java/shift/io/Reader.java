@@ -6,7 +6,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
-public class Reader implements AutoCloseable {
+public class Reader implements IReader {
     private final BufferedReader reader;
 
     public Reader(String fileName) throws ReaderException {
@@ -17,6 +17,7 @@ public class Reader implements AutoCloseable {
         }
     }
 
+    @Override
     public String readLine() throws IOException {
         return reader.readLine();
     }

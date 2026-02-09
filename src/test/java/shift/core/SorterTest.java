@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import shift.config.Config;
+import shift.config.DefaultConfigValues;
 import shift.statistics.FullStatistics;
 import shift.statistics.ShortStatistics;
 
@@ -27,9 +28,9 @@ class SorterTest {
     @BeforeEach
     void setUp() {
         inputFile = tempDir.resolve("input.txt");
-        intOutputFile = tempDir.resolve("integers.txt");
-        floatOutputFile = tempDir.resolve("floats.txt");
-        stringOutputFile = tempDir.resolve("strings.txt");
+        intOutputFile = tempDir.resolve(DefaultConfigValues.INT_FILE);
+        floatOutputFile = tempDir.resolve(DefaultConfigValues.FLOAT_FILE);
+        stringOutputFile = tempDir.resolve(DefaultConfigValues.STR_FILE);
     }
 
     @Test
